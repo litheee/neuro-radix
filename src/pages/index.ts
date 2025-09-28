@@ -1,0 +1,6 @@
+export { DashboardPage } from './Dashboard'
+export { ProfilePage } from './Profile'
+export { ScanUploadPage } from './ScanUpload'
+export { ScanViewerPage } from './ScanViewer'
+export { SignInPage } from './SignIn'
+export { SignUpPage } from './SignUp'
