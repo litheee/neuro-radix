@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-import { getCookie } from '@/lib/cookie'
+import { deleteCookie, getCookie } from '@/lib/cookie'
 
 type AuthContextProps = {
   isAuth: boolean
@@ -8,6 +8,7 @@ type AuthContextProps = {
   userEmail: string
   setAuth: (isAuth: boolean) => void
   setUserEmail: (email: string) => void
+  logout: () => void
 }
 
 export const AuthContext = createContext({} as AuthContextProps)
@@ -31,6 +32,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthInit(true)
   }, [])
 
+  const logout = () => {
+    setAuth(false)
+    deleteCookie('accessToken')
+    localStorage.removeItem('userEmail')
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -38,7 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthInit,
         userEmail,
         setAuth,
-        setUserEmail
+        setUserEmail,
+        logout
       }}
     >
       {children}

@@ -22,12 +22,10 @@ export const ScanInfoForm = () => {
       comment: ''
     }
   })
-  const { watch, control, handleSubmit } = useFormProps
-
-  console.log(watch())
+  const { control, handleSubmit } = useFormProps
 
   const onFormSubmit = ({ comment, date }: FormSchema) => {
-    console.log({ comment, date })
+    // console.log({ comment, date })
   }
 
   return (

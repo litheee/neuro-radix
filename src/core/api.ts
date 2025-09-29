@@ -7,7 +7,6 @@ export const API = axios.create({
 })
 
 function handleUnauthorized() {
-  console.log('Session expired or unauthorized. Please log in again.')
   deleteCookie('accessToken')
   localStorage.removeItem('userEmail')
   window.location.href = '/sign-in'

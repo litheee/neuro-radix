@@ -21,8 +21,8 @@ const schema = z.object({
 type FormSchema = z.infer<typeof schema>
 
 export const SignInPage = () => {
-  const { signIn, isSigningIn, error } = useSignIn()
-  console.log(error)
+  const { signIn, isSigningIn } = useSignIn()
+
   const useFormProps = useForm<FormSchema>({
     resolver: zodResolver(schema),
     defaultValues: {

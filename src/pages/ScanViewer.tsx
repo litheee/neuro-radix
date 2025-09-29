@@ -3,8 +3,8 @@ import { LucideArrowLeft } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 
 import { ScanInfo } from '@/components'
+import { DicomViewer } from '@/components/ScanViewer'
 import { Button } from '@/ui/button'
-import { MedicalImageViewer } from '@/ui/MedicalImageViewer'
 
 import * as API from '@/api'
 
@@ -18,12 +18,36 @@ export const ScanViewerPage = () => {
 
       return API.getScanInfo(Number(id))
     },
-    enabled: Boolean(id)
+    enabled: Boolean(id),
+    refetchInterval: (query) => {
+      const data = query.state.data
+
+      return data?.status !== 'done' ? 30_000 : false
+    }
   })
 
-  if (!scanInfo) return
+  const scanFilename = scanInfo?.storedPath.split('uploads/')[1]
+  // const scanMaskFilename = scanInfo?.resultFile
 
-  const filename = scanInfo.storedPath.split('uploads/')[1]
+  const { data: scanFile, isLoading: isScanLoading } = useQuery({
+    queryKey: ['scan-file', scanFilename],
+    queryFn: () => {
+      if (!scanFilename) return
+      return API.getScanFile(scanFilename)
+    },
+    enabled: Boolean(scanFilename)
+  })
+
+  // const { data: scanMaskFile, isLoading: isScanMaskLoading } = useQuery({
+  //   queryKey: ['scan-mask-file', scanMaskFilename],
+  //   queryFn: () => {
+  //     if (!scanMaskFilename) return
+  //     return API.getScanMaskFile(scanMaskFilename)
+  //   },
+  //   enabled: Boolean(scanMaskFilename)
+  // })
+
+  if (!scanInfo) return
 
   return (
     <div>
@@ -36,16 +60,12 @@ export const ScanViewerPage = () => {
 
         <div>
           <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{scanInfo.name}</h1>
-
-          {/* <p className='mt-1 text-gray-900 dark:text-gray-400'>
-            Some info text
-          </p> */}
         </div>
       </div>
 
       <div className='mt-5 grid gap-6 lg:grid-cols-4'>
         <div className='lg:col-span-3'>
-          <MedicalImageViewer filename={filename} maskFilename={scanInfo.resultFile || ''} />
+          <DicomViewer scanFile={scanFile} isScanLoading={isScanLoading} />
         </div>
 
         <ScanInfo info={scanInfo} />

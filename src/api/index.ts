@@ -42,12 +42,14 @@ export const getScansList = async () => {
   return scans
 }
 
-export const uploadScan = ({ scanFiles }: UploadScanProps) => {
+export const uploadScan = ({ scanFile, onUploadProgress }: UploadScanProps) => {
   const formData = new FormData()
 
-  formData.append('file', scanFiles[0])
+  formData.append('file', scanFile)
 
-  return API.post('/files/upload', formData)
+  return API.post('/files/upload', formData, {
+    onUploadProgress
+  })
 }
 
 export const getScanInfo = async (scanId: number) => {
@@ -95,6 +97,12 @@ export const getScanFile = async (filename: string) => {
       Accept: 'application/dicom'
     }
   })
+
+  return data
+}
+
+export const getScanMaskFile = async (filename: string) => {
+  const { data } = await API.get<ArrayBuffer>(`/upload/${filename}`)
 
   return data
 }

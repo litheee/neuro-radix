@@ -1,3 +1,5 @@
+import type { AxiosProgressEvent } from 'axios'
+
 import type { ScanStatus } from '@/types/scans.types'
 
 export type SignInProps = {
@@ -24,7 +26,8 @@ export type Scan = {
 }
 
 export type UploadScanProps = {
-  scanFiles: File[]
+  scanFile: File
+  onUploadProgress: (progressEvent: AxiosProgressEvent) => void
 }
 
 export type ScanInfo = {

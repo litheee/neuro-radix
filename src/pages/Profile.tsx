@@ -20,7 +20,7 @@ import { generateToken } from '@/lib/generateToken'
 
 export const ProfilePage = () => {
   const queryClient = useQueryClient()
-  const { userEmail } = useAuth()
+  const { userEmail, logout } = useAuth()
 
   const [isTokenVisible, setTokenVisible] = useState(false)
 
@@ -125,6 +125,10 @@ export const ProfilePage = () => {
           </Button>
         </CardFooter>
       </Card>
+
+      <Button className='mt-5 h-10 w-full max-w-25 bg-blue-600 hover:bg-blue-700' onClick={logout}>
+        Выйти
+      </Button>
     </div>
   )
 }

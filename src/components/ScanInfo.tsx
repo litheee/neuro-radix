@@ -28,6 +28,7 @@ export const ScanInfo = ({ info }: ScanInfoProps) => {
   const { status, storedPath, resultText, resultTable, size } = info
 
   const fileExtension = storedPath ? storedPath.split('.')[1].toUpperCase() : '-'
+  const scanLink = `${import.meta.env.VITE_API_BASE}/upload/${storedPath.split('uploads/')[1]}`
 
   return (
     <Card>
@@ -90,7 +91,7 @@ export const ScanInfo = ({ info }: ScanInfoProps) => {
           disabled={!storedPath}
           className='h-10 w-full flex-row bg-blue-600 hover:bg-blue-700'
         >
-          <a href='#' className='flex gap-2.5'>
+          <a href={scanLink} className='flex gap-2.5' download>
             <LucideExternalLink />
             Скачать оригинал
           </a>
