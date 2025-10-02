@@ -18,7 +18,12 @@ type Filters = {
 export const DashboardPage = () => {
   const { data: scans = [] } = useQuery({
     queryKey: ['scans-list'],
-    queryFn: API.getScansList
+    queryFn: API.getScansList,
+    refetchInterval: (query) => {
+      const isSomeScanDoesntLoaded = query.state.data?.some(({ status }) => status !== 'done')
+
+      return isSomeScanDoesntLoaded ? 30_000 : false
+    }
   })
 
   const [filters, setFilters] = useState<Filters>({

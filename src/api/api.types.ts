@@ -47,3 +47,11 @@ export type ApiKeyData = {
   revoked: boolean
   created_at: string
 }
+
+export type ScanUploadedData = {
+  name: string
+  size: number
+  status: ScanStatus
+  id: number
+  stored_path: string
+}

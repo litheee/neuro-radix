@@ -8,19 +8,21 @@ import { Button } from '@/ui/button'
 import { Card, CardFooter, CardHeader } from '@/ui/card'
 import { Progress } from '@/ui/progress'
 
+import { useUploadedScan } from '@/hooks'
 import * as API from '@/api'
 
 export const ScanUploadPage = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
+  const { setUploadedScan } = useUploadedScan()
   const [scans, setScans] = useState<File[]>([])
   const [uploadProgress, setUploadProgress] = useState(100)
 
   const { mutate: uploadScan, isPending: isScanUploading } = useMutation({
-    mutationFn: () => {
+    mutationFn: (file: File) => {
       return API.uploadScan({
-        scanFile: scans[0],
+        scanFile: file,
         onUploadProgress: (e) => {
           if (e.total) {
             setUploadProgress(Math.round((e.loaded * 100) / e.total))
@@ -28,10 +30,16 @@ export const ScanUploadPage = () => {
         }
       })
     },
-    onSuccess: () => {
+    onSuccess: async (data, file) => {
+      await setUploadedScan({
+        scanId: data.id,
+        file
+      })
+
       queryClient.resetQueries({
         queryKey: ['scans-list']
       })
+
       navigate('/dashboard')
     }
   })
@@ -75,7 +83,7 @@ export const ScanUploadPage = () => {
               disabled={scans.length === 0}
               className='h-12 min-w-40 bg-blue-600 hover:bg-blue-700'
               onClick={() => {
-                uploadScan()
+                uploadScan(scans[0])
               }}
             >
               <LucideUpload className='mr-2' /> Загрузить

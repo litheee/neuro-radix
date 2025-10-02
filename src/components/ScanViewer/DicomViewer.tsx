@@ -3,16 +3,22 @@ import { init as dicomImageLoaderInit } from '@cornerstonejs/dicom-image-loader'
 import { useEffect, useRef, useState } from 'react'
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/ui/card'
+import { Progress } from '@/ui/progress'
 
 import { loadDicomFile } from './utils'
 import { ViewerControls } from './ViewerControls'
 
 type MedicalImageViewerProps = {
   scanFile?: ArrayBuffer
+  loadingProgress: number
   isScanLoading: boolean
 }
 
-export const DicomViewer = ({ scanFile, isScanLoading }: MedicalImageViewerProps) => {
+export const DicomViewer = ({
+  scanFile,
+  loadingProgress,
+  isScanLoading
+}: MedicalImageViewerProps) => {
   const scanViewportRef = useRef<HTMLDivElement>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -87,6 +93,8 @@ export const DicomViewer = ({ scanFile, isScanLoading }: MedicalImageViewerProps
     return (
       <div className='p-5'>
         <p className='text-lg font-medium'>Загрузка файла с сервера...</p>
+
+        <Progress className='mt-5 w-full' value={loadingProgress} max={100} />
       </div>
     )
   }

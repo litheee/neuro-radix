@@ -1,17 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import { LucideArrowLeft } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 
 import { ScanInfo } from '@/components'
 import { DicomViewer } from '@/components/ScanViewer'
 import { Button } from '@/ui/button'
 
+import { useUploadedScan } from '@/hooks'
 import * as API from '@/api'
 
 export const ScanViewerPage = () => {
   const { id } = useParams()
+  const { uploadedScan } = useUploadedScan({ scanId: Number(id) })
+  const [scanLoadingProgress, setScanLoadingProgress] = useState(0)
 
-  const { data: scanInfo, isLoading: isScanInfoLoading } = useQuery({
+  const { data: scanInfo } = useQuery({
     queryKey: ['scan-info', id],
     queryFn: () => {
       if (!id) return
@@ -33,9 +37,13 @@ export const ScanViewerPage = () => {
     queryKey: ['scan-file', scanFilename],
     queryFn: () => {
       if (!scanFilename) return
-      return API.getScanFile(scanFilename)
+      return API.getScanFile(scanFilename, (e) => {
+        if (e.total) {
+          setScanLoadingProgress(Math.round((e.loaded * 100) / e.total))
+        }
+      })
     },
-    enabled: Boolean(scanFilename)
+    enabled: Boolean(scanFilename) && !uploadedScan
   })
 
   // const { data: scanMaskFile, isLoading: isScanMaskLoading } = useQuery({
@@ -65,7 +73,11 @@ export const ScanViewerPage = () => {
 
       <div className='mt-5 grid gap-6 lg:grid-cols-4'>
         <div className='lg:col-span-3'>
-          <DicomViewer scanFile={scanFile} isScanLoading={isScanLoading} />
+          <DicomViewer
+            scanFile={uploadedScan?.scan || scanFile}
+            loadingProgress={scanLoadingProgress}
+            isScanLoading={isScanLoading}
+          />
         </div>
 
         <ScanInfo info={scanInfo} />

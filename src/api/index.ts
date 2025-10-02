@@ -1,10 +1,12 @@
 import { API } from '@/core/api'
+import type { AxiosProgressEvent } from 'axios'
 
 import type {
   AccessToken,
   ApiKeyData,
   Scan,
   ScanInfo,
+  ScanUploadedData,
   SignInProps,
   SignUpProps,
   UploadScanProps
@@ -42,14 +44,16 @@ export const getScansList = async () => {
   return scans
 }
 
-export const uploadScan = ({ scanFile, onUploadProgress }: UploadScanProps) => {
+export const uploadScan = async ({ scanFile, onUploadProgress }: UploadScanProps) => {
   const formData = new FormData()
 
   formData.append('file', scanFile)
 
-  return API.post('/files/upload', formData, {
+  const { data } = await API.post<ScanUploadedData>('/files/upload', formData, {
     onUploadProgress
   })
+
+  return data
 }
 
 export const getScanInfo = async (scanId: number) => {
@@ -90,12 +94,16 @@ export const createApiKey = (token: string) => {
   })
 }
 
-export const getScanFile = async (filename: string) => {
+export const getScanFile = async (
+  filename: string,
+  onDownloadProgress: (progressEvent: AxiosProgressEvent) => void
+) => {
   const { data } = await API.get<ArrayBuffer>(`/upload/${filename}`, {
     responseType: 'arraybuffer',
     headers: {
       Accept: 'application/dicom'
-    }
+    },
+    onDownloadProgress
   })
 
   return data
